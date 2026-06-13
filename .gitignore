@@ -1,0 +1,16 @@
+# Ignore data directories and large databases
+prometheus/data/
+loki/data/
+grafana/data/
+*.sqlite
+*.sqlite3
+
+# Ignore temporary scripts
+fix_dash.py
+fix_panel5.py
+query_prom.py
+*.pyc
+
+# Ignore temp folders
+.temp/
+.DS_Store
