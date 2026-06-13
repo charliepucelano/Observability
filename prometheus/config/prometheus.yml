@@ -43,7 +43,6 @@ scrape_configs:
       - targets:
           - https://viaje.leyforge.com
           - https://camperplan.leyforge.com
-          - https://alemanmeister.leyforge.com
           - https://memorias.leyforge.com
           - https://fotos.leyforge.com
           - https://docs.leyforge.com
