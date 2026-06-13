@@ -52,6 +52,12 @@ The process works as follows:
 4. Prometheus scrapes the Pushgateway and stores the historical thermal data.
 5. Grafana visualizes the data using the `aida64-dashboard.json` dashboard.
 
+## AI Integration: Proactive Silent Error Hunter
+
+This stack is deeply integrated with the host's local AI (LM Studio running `Qwen3-30B`). A daily scheduled job (`silent_error_hunter.py`) connects to Loki at 07:30 AM to query for logs matching `(?i)(error|warn|exception|panic)` over the last 24 hours.
+
+Instead of flooding alerts for every warning, it packages the raw logs and asks the local frontier model to summarize the top 3 critical, non-crashing (silent) issues. The output is pushed to Telegram and appended to the weekly DevOps dump for broader architectural context.
+
 ## Maintenance
 
 ### Resetting Data
