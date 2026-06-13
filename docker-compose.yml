@@ -1,0 +1,123 @@
+services:
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - D:/observability/prometheus/config:/etc/prometheus
+      - D:/observability/prometheus/data:/prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=30d
+      - --web.enable-lifecycle
+    ports:
+      - 9090:9090
+    networks:
+      - observability
+
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    restart: unless-stopped
+    volumes:
+      - D:/observability/loki/config:/etc/loki
+      - D:/observability/loki/data:/loki
+    command: -config.file=/etc/loki/loki-config.yml
+    ports:
+      - 3100:3100
+    networks:
+      - observability
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - D:/observability/promtail/config:/etc/promtail
+      - D:/backups/logs:/geekom/backup-logs:ro
+      - D:/observability/logs:/geekom/windows-logs:ro
+    command: -config.file=/etc/promtail/promtail-config.yml
+    networks:
+      - observability
+    depends_on:
+      - loki
+
+  pushgateway:
+    image: prom/pushgateway:latest
+    container_name: pushgateway
+    restart: unless-stopped
+    ports:
+      - 9091:9091
+    networks:
+      - observability
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=carlos
+      - GF_SECURITY_ADMIN_PASSWORD=changeme123
+      - GF_SERVER_ROOT_URL=https://grafana.leyforge.com
+    volumes:
+      - D:/observability/grafana/data:/var/lib/grafana
+    ports:
+      - 3010:3000
+    networks:
+      - observability
+    depends_on:
+      - prometheus
+      - loki
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    privileged: true
+    networks:
+      - observability
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    pid: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    ports:
+      - 9100:9100
+    networks:
+      - observability
+
+  blackbox:
+    image: prom/blackbox-exporter:latest
+    container_name: blackbox
+    restart: unless-stopped
+    ports:
+      - "9115:9115"
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
+    networks:
+      - observability
+
+networks:
+  observability:
+    driver: bridge
+

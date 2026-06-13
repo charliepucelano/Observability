@@ -1,0 +1,18 @@
+{
+	"ulid": "01KV0A719PP5TA99ES2H2JEP7R",
+	"minTime": 1781337601592,
+	"maxTime": 1781344800000,
+	"stats": {
+		"numSamples": 5482053,
+		"numFloatSamples": 5482053,
+		"numSeries": 11536,
+		"numChunks": 45829
+	},
+	"compaction": {
+		"level": 1,
+		"sources": [
+			"01KV0A719PP5TA99ES2H2JEP7R"
+		]
+	},
+	"version": 1
+}

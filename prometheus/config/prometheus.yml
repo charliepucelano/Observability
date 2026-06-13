@@ -1,0 +1,58 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+
+  # Windows host metrics via Windows Exporter
+  - job_name: "windows_host"
+    static_configs:
+      - targets: ["host.docker.internal:9182"]
+        labels:
+          instance: "geekom-a9"
+
+  # Pushgateway — receives AIDA64 sensor pushes
+  - job_name: "pushgateway"
+    honor_labels: true
+    static_configs:
+      - targets: ["pushgateway:9091"]
+
+  # Prometheus self-monitoring
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Docker container metrics (via cAdvisor)
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  # Node Exporter - Linux/container host metrics
+  - job_name: "node-exporter"
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels:
+          instance: "geekom-a9"
+
+  # Blackbox Exporter - Uptime/HTTP monitoring
+  - job_name: "uptime"
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://viaje.leyforge.com
+          - https://camperplan.leyforge.com
+          - https://alemanmeister.leyforge.com
+          - https://memorias.leyforge.com
+          - https://fotos.leyforge.com
+          - https://docs.leyforge.com
+          - https://music.leyforge.com
+          - https://grafana.leyforge.com
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - replacement: blackbox:9115
+        target_label: __address__
