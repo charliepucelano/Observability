@@ -1,0 +1,135 @@
+apiVersion: 1
+groups:
+  - orgId: 1
+    name: "Homelab Availability"
+    folder: "Homelab"
+    interval: 1m
+    rules:
+      # 1. Service Down Alert
+      - uid: blackbox_service_down
+        title: Service Down Alert
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: afoc3znhwo4cgf
+            model:
+              expr: probe_success{job="uptime"}
+              instant: true
+              refId: A
+          - refId: C
+            queryType: expression
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [1]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: threshold
+        for: 5m
+        noDataState: NoData
+        execErrState: KeepLast
+        annotations:
+          description: "Service {{ $labels.instance }} went offline — check Cloudflare tunnel and local app."
+          summary: "🔴 Service is DOWN: {{ $labels.instance }}"
+
+      # 2. Node Exporter Down
+      - uid: node_exporter_down
+        title: Node Exporter Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: afoc3znhwo4cgf
+            model:
+              expr: up{job="node-exporter"}
+              instant: true
+              refId: A
+          - refId: C
+            queryType: expression
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [1]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: threshold
+        for: 5m
+        noDataState: NoData
+        execErrState: KeepLast
+        annotations:
+          description: "Prometheus cannot scrape the Node Exporter on {{ $labels.instance }}."
+          summary: "🔴 Node Exporter is DOWN: {{ $labels.instance }}"
+
+      # 3. Blackbox Exporter Down
+      - uid: blackbox_exporter_down
+        title: Blackbox Exporter Down
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: afoc3znhwo4cgf
+            model:
+              expr: up{job="uptime"}
+              instant: true
+              refId: A
+          - refId: C
+            queryType: expression
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [1]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [C]
+                  reducer:
+                    params: []
+                    type: last
+                  type: query
+              datasource:
+                type: __expr__
+                uid: __expr__
+              expression: A
+              refId: C
+              type: threshold
+        for: 5m
+        noDataState: NoData
+        execErrState: KeepLast
+        annotations:
+          description: "Prometheus cannot scrape the Blackbox Exporter."
+          summary: "🔴 Blackbox Exporter is DOWN"

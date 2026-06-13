@@ -63,6 +63,7 @@ services:
       - GF_SERVER_ROOT_URL=https://grafana.leyforge.com
     volumes:
       - D:/observability/grafana/data:/var/lib/grafana
+      - D:/observability/grafana/provisioning:/etc/grafana/provisioning
     ports:
       - 3010:3000
     networks:
