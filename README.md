@@ -24,9 +24,10 @@ The observability stack includes the following core components:
 By default, the `docker-compose.yml` mounts several local directories for persistent storage:
 * `prometheus/data`: Persistent storage for Prometheus metrics.
 * `grafana/data`: Persistent storage for Grafana plugins, dashboards, and SQLite database.
+* `grafana/provisioning`: Configuration files to automatically provision Grafana Alert Rules as Code.
 * `loki/data`: Persistent storage for Loki logs and chunks.
 
-*Note: These directories are excluded from version control to prevent committing large databases.*
+*Note: Data directories are excluded from version control to prevent committing large databases. Provisioning configurations are tracked in Git.*
 
 ## Dashboards
 
