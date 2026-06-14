@@ -59,6 +59,15 @@ This stack is deeply integrated with the host's local AI (LM Studio running `Qwe
 
 Instead of flooding alerts for every warning, it packages the raw logs and asks the local frontier model to summarize the top 3 critical, non-crashing (silent) issues. The output is pushed to Telegram and appended to the weekly DevOps dump for broader architectural context.
 
+## AI Integration: Homelab Chat & RAG
+
+The observability stack includes a local RAG (Retrieval-Augmented Generation) system built on ChromaDB. This allows you to chat directly with your homelab via Telegram using the `/ask` command.
+
+1. `rag_ingest.py` indexes your local documentation (e.g., `system_architecture.md`, `recent_fixes.md`).
+2. When you send `/ask <query>` to the Telegram bot, `ask_homelab.py` queries ChromaDB for context.
+3. The context and your query are sent to the local LM Studio instance (`qwen/qwen3-30b-a3b-2507`) to generate an accurate, context-aware answer.
+4. The bot can also proactively triage crashed Docker containers by fetching their last logs from Loki and diagnosing them via the LLM.
+
 ## Maintenance
 
 ### Resetting Data
