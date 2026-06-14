@@ -45,9 +45,9 @@ scrape_configs:
           - https://camperplan.leyforge.com
           - https://memorias.leyforge.com
           - https://fotos.leyforge.com
-          - https://docs.leyforge.com
-          - https://music.leyforge.com
-          - https://grafana.leyforge.com
+          - https://docs.leyforge.com/accounts/login/?next=/
+          - https://music.leyforge.com/app/
+          - https://grafana.leyforge.com/login
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
