@@ -1,0 +1,69 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+
+  - job_name: docker
+    docker_sd_configs:
+      - host: tcp://host.docker.internal:2375
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: [__meta_docker_container_name]
+        regex: '/?(.*)'
+        target_label: container
+      - source_labels: [__meta_docker_container_image]
+        target_label: image
+      - replacement: docker
+        target_label: job
+    pipeline_stages:
+      - docker: {}
+      - match:
+          selector: '{container="immich_server"}'
+          stages:
+            - drop:
+                expression: ".*ImproperImageHeader.*"
+
+  - job_name: backup_logs
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: geekom-backups
+          host: geekom-a9
+          __path__: /geekom/backup-logs/*.log
+
+  - job_name: windows_events
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: windows-events
+          host: geekom-a9
+          container: windows-events
+          __path__: /geekom/windows-logs/windows-events.log
+    pipeline_stages:
+      - regex:
+          expression: '^\[(?P<timestamp>[^\]]+)\] \[(?P<level>[^\]]+)\] \[(?P<source>[^\]]+)\] (?P<message>.*)'
+      - labels:
+          level:
+          source:
+
+  - job_name: windows_processes
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: windows-processes
+          host: geekom-a9
+          __path__: /geekom/windows-logs/process-monitor.log
+
+  - job_name: cadvisor
+    static_configs:
+      - targets: ['cadvisor:8080']
