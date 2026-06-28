@@ -9,8 +9,10 @@ The observability stack includes the following core components:
 * **[Grafana](https://grafana.com/):** The visual dashboarding engine. Runs on port `3000`.
 * **[Prometheus](https://prometheus.io/):** The time-series database and scraping engine for metrics. Runs on port `9090`.
 * **[Prometheus Pushgateway](https://prometheus.io/docs/practices/pushing/):** An intermediary service for ephemeral and batch jobs (like our AIDA64 powershell script) to push metrics to. Runs on port `9091`.
+* **[VictoriaMetrics](https://victoriametrics.com/):** High-performance, scalable time-series database configured for 1-year long-term retention of Prometheus metrics via remote write. Runs on port `8428`.
 * **[Loki](https://grafana.com/oss/loki/):** The log aggregation system, designed to be highly cost-effective and easy to operate. Runs on port `3100`.
 * **[Promtail](https://grafana.com/docs/loki/latest/clients/promtail/):** The agent that ships local logs to the Loki instance.
+* **[Speedtest Exporter](https://github.com/MiguelNDeCarvalho/speedtest-exporter):** Runs hourly automated ISP speed tests to monitor network degradation.
 
 ## Installation & Usage
 
@@ -22,16 +24,17 @@ The observability stack includes the following core components:
 ### Data Persistence
 
 By default, the `docker-compose.yml` mounts several local directories for persistent storage:
-* `prometheus/data`: Persistent storage for Prometheus metrics.
+* `prometheus/data`: Persistent storage for recent Prometheus metrics (14 days).
+* `victoriametrics/data`: Persistent storage for long-term metrics (1 year).
 * `grafana/data`: Persistent storage for Grafana plugins, dashboards, and SQLite database.
-* `grafana/provisioning`: Configuration files to automatically provision Grafana Alert Rules as Code.
+* `grafana/provisioning`: Configuration files to automatically provision Grafana Dashboards, Alerting Contact Points (Telegram), and Notification Policies.
 * `loki/data`: Persistent storage for Loki logs and chunks.
 
 *Note: Data directories are excluded from version control to prevent committing large databases. Provisioning configurations are tracked in Git.*
 
 ## Dashboards
 
-Several pre-configured dashboards are included in the repository as `.json` files:
+Several pre-configured dashboards are included in the repository as `.json` files inside `grafana/provisioning/dashboards/json/`:
 
 * `aida64-dashboard.json`: PC health and thermal monitoring via AIDA64 metrics.
 * `dashboard-node-optimized.json`: Node exporter metrics (CPU, Memory, Disk, Network).
@@ -40,7 +43,7 @@ Several pre-configured dashboards are included in the repository as `.json` file
 * `uptime-dashboard.json`: Status and uptime monitoring.
 * `blackbox-dashboard-optimized.json`: Network probing and endpoint health.
 
-These can be imported directly into Grafana via the UI (`Dashboards` -> `Import` -> `Upload JSON file`).
+These dashboards are automatically provisioned by Grafana on startup. You do not need to import them manually.
 
 ## AIDA64 Integration
 
@@ -77,6 +80,15 @@ This repository also hosts the custom OpenClaw AI agent skills used by the homel
 * `skills/devops_analyzer`: Analyzes weekly DevOps metrics (like Loki logs, Prometheus thermal data, and memory stats) via Perplexity/Qwen.
 
 These skills are centrally version-controlled here but are symlinked into the OpenClaw workspace (`D:\openclaw\data\skills`) so the agent can execute them.
+
+## Automation & Maintenance Scripts
+
+The `D:\scripts` directory contains various PowerShell and Node automation tasks running as scheduled tasks or NSSM services:
+
+* **Container Watchdog (`container-watchdog.ps1`):** A continuous NSSM background service that polls for exited containers and automatically restarts them, escalating to Telegram if the restart limit is breached.
+* **Backup Verification (`verify-backup.ps1`):** A weekly scheduled task that verifies the integrity and existence of backups across services (Paperless, OpenClaw, Veeam, Firebase) and pushes alerts via Telegram.
+* **RAG File Watcher (`rag-file-watcher.ps1`):** An NSSM service that watches core documentation (like `README.md` and `recent_fixes.md`) for changes and automatically triggers a ChromaDB RAG re-index.
+* **Synthetic User Journeys (`synthetic-tests/`):** Playwright scripts (e.g., `immich-journey.js`) orchestrated by `run-synthetic-tests.ps1` to test full E2E application usability (e.g., uploading and verifying a test image).
 
 ## Maintenance
 

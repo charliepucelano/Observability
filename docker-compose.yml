@@ -61,6 +61,8 @@ services:
       - GF_SECURITY_ADMIN_USER=carlos
       - GF_SECURITY_ADMIN_PASSWORD=changeme123
       - GF_SERVER_ROOT_URL=https://grafana.leyforge.com
+      - TG_TOKEN=${TG_TOKEN}
+      - TG_CHAT_ID=${TG_CHAT_ID}
     volumes:
       - D:/observability/grafana/data:/var/lib/grafana
       - D:/observability/grafana/provisioning:/etc/grafana/provisioning
@@ -115,6 +117,32 @@ services:
     dns:
       - 1.1.1.1
       - 8.8.8.8
+    networks:
+      - observability
+
+  speedtest:
+    image: miguelndecarvalho/speedtest-exporter:latest
+    container_name: speedtest
+    restart: unless-stopped
+    ports:
+      - "9798:9798"
+    environment:
+      - SPEEDTEST_INTERVAL=1800  # 30 minutes
+    networks:
+      - observability
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: victoriametrics
+    restart: unless-stopped
+    volumes:
+      - D:/observability/victoria/data:/victoria-metrics-data
+    command:
+      - -storageDataPath=/victoria-metrics-data
+      - -retentionPeriod=12  # 12 months
+      - -dedup.minScrapeInterval=15s
+    ports:
+      - "8428:8428"
     networks:
       - observability
 

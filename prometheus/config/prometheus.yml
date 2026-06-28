@@ -2,6 +2,12 @@ global:
   scrape_interval: 15s
   evaluation_interval: 15s
 
+remote_write:
+  - url: http://victoriametrics:8428/api/v1/write
+
+rule_files:
+  - "/etc/prometheus/rules/*.yml"
+
 scrape_configs:
 
   # Windows host metrics via Windows Exporter
@@ -48,6 +54,8 @@ scrape_configs:
           - https://docs.leyforge.com/accounts/login/?next=/
           - https://music.leyforge.com/app/
           - https://grafana.leyforge.com/login
+          - https://chat.leyforge.com/auth
+          - https://pdf.leyforge.com
     relabel_configs:
       - source_labels: [__address__]
         target_label: __param_target
@@ -55,3 +63,10 @@ scrape_configs:
         target_label: instance
       - replacement: blackbox:9115
         target_label: __address__
+
+  # Speedtest Exporter
+  - job_name: "speedtest"
+    scrape_interval: 35m
+    scrape_timeout: 60s
+    static_configs:
+      - targets: ["speedtest:9798"]

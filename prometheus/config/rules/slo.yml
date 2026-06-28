@@ -1,0 +1,19 @@
+groups:
+  - name: slo_uptime
+    interval: 1m
+    rules:
+      # 30-day rolling availability per service
+      - record: slo:probe_success:avg30d
+        expr: avg_over_time(probe_success{job="uptime"}[30d])
+        labels:
+          slo: "99.5"
+
+      # Error budget remaining (1 = full budget, 0 = exhausted)
+      - record: slo:error_budget_remaining:ratio
+        expr: |
+          1 - (
+            (1 - avg_over_time(probe_success{job="uptime"}[30d]))
+            / (1 - 0.995)
+          )
+        labels:
+          slo: "99.5"

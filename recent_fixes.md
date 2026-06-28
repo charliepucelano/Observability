@@ -19,4 +19,12 @@ This is a running changelog of fixes and mitigations applied to the homelab. Whe
 - **2026-06-21**: Removed cs collector from windows_exporter config to fix crash loop.
 - **2026-06-21**: Ran docker system prune --volumes -f to reclaim disk space.
 - **2026-06-21**: Filtered ImproperImageHeader logs from immich_server in Promtail.
-- **2026-06-21**: Updated nalyze.sh watchdog to support new Perplexity output classes.
+- **2026-06-21**: Updated  nalyze.sh watchdog to support new Perplexity output classes.
+- **[2026-06-23] Fixed Vite 5 `allowedHosts` connectivity issue for `camperplan` and `viaje` by removing corrupted spaces in `VITE_APP_DOMAIN` inside their respective `.env` files.
+- **[2026-06-23] Bypassed Nginx Proxy Manager for Stirling PDF (`pdf.leyforge.com`), mapping Cloudflare Tunnel directly to the local port to resolve proxy timeout loops.
+- **[2026-06-27] RoadTripPlanner Firebase Hooks & Bash Scripts**: Fixed race conditions during atomic list reordering by adding an `updateStops` hook in Firebase. Replaced broken inline heredocs in `crawl_one.sh` with standalone `.js` scripts to fix module errors.
+- **[2026-06-27] CamperPlan Bug Fixes & Hardening**: Fixed "calculating..." bug by properly calculating and persisting legs. Implemented atomic reordering for TripPoints. Updated agent scripts to use `.env.agent` instead of hardcoded Firebase URLs and API keys. Removed legacy Perplexity code. Cleaned up Maps libraries and `Navigation.tsx`. Added `ErrorBoundary.tsx` and paginated campsite search results for better UI performance.
+- **[2026-06-27]**: Fixed camperplan RouteMap, TripSetup disjointed state loops, AdminPanel missing function crash, and Typescript errors.
+- **[2026-06-28] Observability Enhancements Implementation**: Implemented a comprehensive observability enhancement roadmap including Grafana native Telegram alerting, backup verification scripts, dashboard auto-provisioning, Network/ISP monitoring with speedtest exporter, SLO tracking, container auto-restart watchdog, RAG auto-reindexing, VictoriaMetrics long-term storage, and Playwright synthetic user journeys.
+- **[2026-06-28] Grafana Telegram Alerting Fix**: Hardcoded `chatID` in `contact-points.yaml` to bypass a Grafana provisioning bug where purely numeric environment variables (like Telegram Chat IDs) are auto-converted to `float64`, causing JSON unmarshal crashes when the Go struct strictly expects a string.
+- **[2026-06-28] Container Watchdog Service Fix**: Wrapped the logic in `container-watchdog.ps1` in an infinite `while ($true)` loop so NSSM correctly identifies it as a continuous service instead of immediately pausing it (`SERVICE_PAUSED`) upon exit.

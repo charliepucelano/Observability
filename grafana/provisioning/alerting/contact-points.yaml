@@ -1,0 +1,12 @@
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: telegram-direct
+    receivers:
+      - uid: telegram-primary
+        type: telegram
+        settings:
+          botToken: "${TG_TOKEN}"
+          chatID: "449465182"
+          parseMode: HTML
+        disableResolveMessage: false
