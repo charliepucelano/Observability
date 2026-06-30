@@ -2,6 +2,7 @@
 prometheus/data/
 loki/data/
 grafana/data/
+victoria/data/
 *.sqlite
 *.sqlite3
 

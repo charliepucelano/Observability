@@ -40,7 +40,7 @@ Several pre-configured dashboards are included in the repository as `.json` file
 * `dashboard-node-optimized.json`: Node exporter metrics (CPU, Memory, Disk, Network).
 * `cadvisor-dashboard-improved.json`: Docker container metrics (cAdvisor).
 * `loki-dashboard-improved.json`: System and container log viewing.
-* `uptime-dashboard.json`: Status and uptime monitoring.
+* `uptime-dashboard.json`: Status, SLO tracking, and uptime monitoring.
 * `blackbox-dashboard-optimized.json`: Network probing and endpoint health.
 
 These dashboards are automatically provisioned by Grafana on startup. You do not need to import them manually.
@@ -88,6 +88,7 @@ The `D:\scripts` directory contains various PowerShell and Node automation tasks
 * **Container Watchdog (`container-watchdog.ps1`):** A continuous NSSM background service that polls for exited containers and automatically restarts them, escalating to Telegram if the restart limit is breached.
 * **Backup Verification (`verify-backup.ps1`):** A weekly scheduled task that verifies the integrity and existence of backups across services (Paperless, OpenClaw, Veeam, Firebase) and pushes alerts via Telegram.
 * **RAG File Watcher (`rag-file-watcher.ps1`):** An NSSM service that watches core documentation (like `README.md` and `recent_fixes.md`) for changes and automatically triggers a ChromaDB RAG re-index.
+* **Process Monitor (`process-monitor.ps1`):** A background service that samples top CPU/RAM usage every 60s and ships it to Loki for correlation.
 * **Synthetic User Journeys (`synthetic-tests/`):** Playwright scripts (e.g., `immich-journey.js`) orchestrated by `run-synthetic-tests.ps1` to test full E2E application usability (e.g., uploading and verifying a test image).
 
 ## Maintenance
