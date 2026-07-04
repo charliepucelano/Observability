@@ -47,22 +47,51 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-          - https://viaje.leyforge.com
-          - https://camperplan.leyforge.com
-          - https://memorias.leyforge.com
-          - https://fotos.leyforge.com
-          - https://docs.leyforge.com/accounts/login/?next=/
-          - https://music.leyforge.com/app/
-          - https://grafana.leyforge.com/login
-          - https://chat.leyforge.com/auth
-          - https://pdf.leyforge.com
+          - viaje.leyforge.com
+          - camperplan.leyforge.com
+          - memorias.leyforge.com
+          - immich.leyforge.com
+          - paperless.leyforge.com
+          - music.leyforge.com
+          - grafana.leyforge.com
+          - chat.leyforge.com
     relabel_configs:
       - source_labels: [__address__]
+        regex: 'viaje\.leyforge\.com'
         target_label: __param_target
-      - source_labels: [__param_target]
+        replacement: 'http://host.docker.internal:4173'
+      - source_labels: [__address__]
+        regex: 'camperplan\.leyforge\.com'
+        target_label: __param_target
+        replacement: 'http://host.docker.internal:5174'
+      - source_labels: [__address__]
+        regex: 'memorias\.leyforge\.com'
+        target_label: __param_target
+        replacement: 'http://host.docker.internal:3001'
+      - source_labels: [__address__]
+        regex: 'immich\.leyforge\.com'
+        target_label: __param_target
+        replacement: 'http://host.docker.internal:2283'
+      - source_labels: [__address__]
+        regex: 'paperless\.leyforge\.com'
+        target_label: __param_target
+        replacement: 'http://host.docker.internal:8000/accounts/login/?next=/'
+      - source_labels: [__address__]
+        regex: 'music\.leyforge\.com'
+        target_label: __param_target
+        replacement: 'http://host.docker.internal:4533/app/'
+      - source_labels: [__address__]
+        regex: 'grafana\.leyforge\.com'
+        target_label: __param_target
+        replacement: 'http://host.docker.internal:3010/login'
+      - source_labels: [__address__]
+        regex: 'chat\.leyforge\.com'
+        target_label: __param_target
+        replacement: 'http://host.docker.internal:11000/auth'
+      - source_labels: [__address__]
         target_label: instance
-      - replacement: blackbox:9115
-        target_label: __address__
+      - target_label: __address__
+        replacement: blackbox:9115
 
   # Speedtest Exporter
   - job_name: "speedtest"

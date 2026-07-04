@@ -114,9 +114,10 @@ services:
     restart: unless-stopped
     ports:
       - "9115:9115"
-    dns:
-      - 1.1.1.1
-      - 8.8.8.8
+    volumes:
+      - ./blackbox/config:/config
+    command:
+      - "--config.file=/config/blackbox.yml"
     networks:
       - observability
 
