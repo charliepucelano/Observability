@@ -86,6 +86,7 @@ These skills are centrally version-controlled here but are symlinked into the Op
 The `D:\scripts` directory contains various PowerShell and Node automation tasks running as scheduled tasks or NSSM services:
 
 * **Container Watchdog (`container-watchdog.ps1`):** A continuous NSSM background service that polls for exited containers and automatically restarts them, escalating to Telegram if the restart limit is breached.
+* **Pre-Backup Docker Context (`pre-backup-docker.ps1`):** A weekly scheduled task that runs Docker export operations (such as snapshotting OpenClaw's container data) under the current user's context instead of SYSTEM, ensuring correct file permissions and timestamps prior to Veeam backups.
 * **Backup Verification (`verify-backup.ps1`):** A weekly scheduled task that verifies the integrity and existence of backups across services (Paperless, OpenClaw, Veeam, Firebase) and pushes alerts via Telegram.
 * **RAG File Watcher (`rag-file-watcher.ps1`):** An NSSM service that watches core documentation (like `README.md` and `recent_fixes.md`) for changes and automatically triggers a ChromaDB RAG re-index.
 * **Process Monitor (`process-monitor.ps1`):** A background service that samples top CPU/RAM usage every 60s and ships it to Loki for correlation.
