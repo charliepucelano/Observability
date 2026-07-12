@@ -73,11 +73,12 @@ The observability stack includes a local RAG (Retrieval-Augmented Generation) sy
 3. The context and your query are sent to the local LM Studio instance (`qwen/qwen3-30b-a3b-2507`) to generate an accurate, context-aware answer. If the AI detects an issue that can be solved via PowerShell, it proposes a fix using the `<execute>` tags, spawning interactive Approve/Reject buttons in Telegram.
 4. The bot can also proactively triage crashed Docker containers by fetching their last logs from Loki and diagnosing them via the LLM, again proposing automated one-touch interactive fixes.
 
-## Open WebUI Local Analysis
+## DevOps Analysis (Dual-Engine)
 
-This repository supports local AI DevOps analysis via Open WebUI.
+This repository supports a dual-engine AI DevOps analysis workflow:
 
-* `scripts/analyze_local.py`: Analyzes weekly DevOps metrics (like Loki logs, Prometheus thermal data, and memory stats) by querying the Open WebUI API (`qwen/qwen3.6-35b-a3b`). This approach leverages existing persistent knowledge spaces and bypasses browser-based crawler instability.
+* **Perplexity (Frontier Model)**: The primary engine triggered weekly. `weekly-analysis.ps1` triggers OpenClaw to crawl Perplexity and submit the dump for frontier-level reasoning.
+* **Open WebUI (Local Model)**: An alternative local-first engine. `scripts/analyze_local.py` posts the dump to the Open WebUI API (`qwen/qwen3.6-35b-a3b`), leveraging existing persistent knowledge spaces and avoiding external dependencies.
 
 ## Automation & Maintenance Scripts
 
