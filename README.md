@@ -73,13 +73,11 @@ The observability stack includes a local RAG (Retrieval-Augmented Generation) sy
 3. The context and your query are sent to the local LM Studio instance (`qwen/qwen3-30b-a3b-2507`) to generate an accurate, context-aware answer. If the AI detects an issue that can be solved via PowerShell, it proposes a fix using the `<execute>` tags, spawning interactive Approve/Reject buttons in Telegram.
 4. The bot can also proactively triage crashed Docker containers by fetching their last logs from Loki and diagnosing them via the LLM, again proposing automated one-touch interactive fixes.
 
-## OpenClaw Skills
+## Open WebUI Local Analysis
 
-This repository also hosts the custom OpenClaw AI agent skills used by the homelab, located in the `skills/` directory.
+This repository supports local AI DevOps analysis via Open WebUI.
 
-* `skills/devops_analyzer`: Analyzes weekly DevOps metrics (like Loki logs, Prometheus thermal data, and memory stats) via Perplexity/Qwen.
-
-These skills are centrally version-controlled here but are symlinked into the OpenClaw workspace (`D:\openclaw\data\skills`) so the agent can execute them.
+* `scripts/analyze_local.py`: Analyzes weekly DevOps metrics (like Loki logs, Prometheus thermal data, and memory stats) by querying the Open WebUI API (`qwen/qwen3.6-35b-a3b`). This approach leverages existing persistent knowledge spaces and bypasses browser-based crawler instability.
 
 ## Automation & Maintenance Scripts
 

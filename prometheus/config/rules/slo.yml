@@ -4,7 +4,7 @@ groups:
     rules:
       # 30-day rolling availability per service
       - record: slo:probe_success:avg30d
-        expr: avg_over_time(probe_success{job="uptime"}[30d])
+        expr: avg_over_time(probe_success{job="uptime"}[30d]) and probe_success{job="uptime"}
         labels:
           slo: "99.5"
 
@@ -12,7 +12,7 @@ groups:
       - record: slo:error_budget_remaining:ratio
         expr: |
           1 - (
-            (1 - avg_over_time(probe_success{job="uptime"}[30d]))
+            (1 - (avg_over_time(probe_success{job="uptime"}[30d]) and probe_success{job="uptime"}))
             / (1 - 0.995)
           )
         labels:

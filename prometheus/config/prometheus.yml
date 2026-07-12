@@ -77,6 +77,10 @@ scrape_configs:
         target_label: __param_target
         replacement: 'http://host.docker.internal:8000/accounts/login/?next=/'
       - source_labels: [__address__]
+        regex: 'paperless\.leyforge\.com'
+        target_label: __param_module
+        replacement: 'http_paperless'
+      - source_labels: [__address__]
         regex: 'music\.leyforge\.com'
         target_label: __param_target
         replacement: 'http://host.docker.internal:4533/app/'
