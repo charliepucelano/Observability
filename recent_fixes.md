@@ -1,4 +1,4 @@
-# Recent Corrective Fixes (Do Not Re-diagnose)
+﻿# Recent Corrective Fixes (Do Not Re-diagnose)
 
 This is a running changelog of fixes and mitigations applied to the homelab. When analyzing logs and metrics, please assume these issues are already resolved and do not propose them as new solutions unless the metrics show the mitigation has explicitly failed.
 
@@ -60,3 +60,8 @@ This is a running changelog of fixes and mitigations applied to the homelab. Whe
   - Wrapper pre-backup.ps1 deployed to run docker-based backup tasks under current user context to avoid SYSTEM permission issues.
   - Fixed Telegram push encoding issue by converting the JSON payload mechanism to application/x-www-form-urlencoded, resolving the question mark (?) showing up instead of green checkmarks (?) due to PowerShell 5.1 ConvertTo-Json Unicode mangling.
 - **[2026-07-12] Dual-Engine DevOps Analysis**: Reverted the default weekly DevOps analysis (`/analyze`) back to the OpenClaw/Perplexity frontier model workflow, but preserved the Open WebUI local model integration (`analyze_local.py`) via a new ad-hoc Telegram hook (`/analyze_local`). Refactored `weekly-analysis.ps1` to support `-Engine Perplexity` and `-Engine Local` dynamically, allowing side-by-side comparison of frontier reasoning vs local reasoning equipped with knowledge spaces.
+- 2026-07-13: Crawler string filters are now properly mapped to Park4Night integer type IDs inside search_point.sh based on the project's original research.
+- 2026-07-13: Fixed ugly huge scrollbars on overflow-x containers (like bottom map waypoints) by properly setting ::-webkit-scrollbar height and explicitly defining scrollbar-hide in index.css
+- 2026-07-13: Fixed RouteMap marker overlapping (5 is 1 and 5) by introducing 'H' for Home on round trips. Added 'No GPS' warning to RoutePlanner for waypoints missing coordinates.
+- 2026-07-13: Updated RouteMap.tsx to group overlapping waypoints and combine their marker labels (e.g., '2, 3') so markers with identical coordinates no longer hide each other.
+- **[2026-07-19] Weekly Analysis Path Mismatch Fix**: Fixed the Perplexity weekly analysis silently succeeding inside Docker (`analyze.sh` saving to `/home/node/.openclaw/workspace/dumps/latest-analysis.txt` mapped to host `D:\openclaw\data\dumps\`) but `weekly-analysis.ps1` only checking `D:\dev\dumps\latest-analysis.txt`. The script now uses engine-aware paths and copies the Perplexity result to the local dir for consistency.
