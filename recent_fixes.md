@@ -1,4 +1,4 @@
-﻿# Recent Corrective Fixes (Do Not Re-diagnose)
+# Recent Corrective Fixes (Do Not Re-diagnose)
 
 This is a running changelog of fixes and mitigations applied to the homelab. When analyzing logs and metrics, please assume these issues are already resolved and do not propose them as new solutions unless the metrics show the mitigation has explicitly failed.
 
@@ -65,3 +65,4 @@ This is a running changelog of fixes and mitigations applied to the homelab. Whe
 - 2026-07-13: Fixed RouteMap marker overlapping (5 is 1 and 5) by introducing 'H' for Home on round trips. Added 'No GPS' warning to RoutePlanner for waypoints missing coordinates.
 - 2026-07-13: Updated RouteMap.tsx to group overlapping waypoints and combine their marker labels (e.g., '2, 3') so markers with identical coordinates no longer hide each other.
 - **[2026-07-19] Weekly Analysis Path Mismatch Fix**: Fixed the Perplexity weekly analysis silently succeeding inside Docker (`analyze.sh` saving to `/home/node/.openclaw/workspace/dumps/latest-analysis.txt` mapped to host `D:\openclaw\data\dumps\`) but `weekly-analysis.ps1` only checking `D:\dev\dumps\latest-analysis.txt`. The script now uses engine-aware paths and copies the Perplexity result to the local dir for consistency.
+- **[2026-07-20] Grafana Dashboard v2 Format Fix**: Fixed ~2880 daily `failed to save dashboard` provisioning errors caused by `cadvisor-dashboard-improved.json` and `loki-dashboard-improved.json` being saved in Grafana v2 "scenes" format (using `elements`/`layout` keys). The file-based provisioner only supports v1 format (`panels` key). Exported both dashboards from the Grafana API (which returns v1/`schemaVersion: 42`) and overwrote the provisioning files. The provisioner re-reads every 60s, so errors ceased immediately.
