@@ -12,6 +12,7 @@ services:
       - --storage.tsdb.path=/prometheus
       - --storage.tsdb.retention.time=30d
       - --web.enable-lifecycle
+      - --web.enable-admin-api
     ports:
       - 9090:9090
     networks:
@@ -78,6 +79,12 @@ services:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: cadvisor
     restart: unless-stopped
+    command:
+      - --housekeeping_interval=30s
+      - --docker_only=true
+      - --disable_metrics=disk,tcp,udp,percpu,sched,process
+      - --update_machine_info_interval=24h
+    mem_limit: 300m
     ports:
       - "8080:8080"
     volumes:

@@ -14,4 +14,6 @@ query_prom.py
 
 # Ignore temp folders
 .temp/
+scratch/
+logs/
 .DS_Store

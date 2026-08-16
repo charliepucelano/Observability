@@ -29,6 +29,11 @@ scrape_configs:
           stages:
             - drop:
                 expression: ".*ImproperImageHeader.*"
+      - match:
+          selector: '{container="cadvisor"}'
+          stages:
+            - drop:
+                expression: ".*Failed to get system UUID.*|.*DMI.*|.*machine-id.*"
 
   - job_name: backup_logs
     static_configs:
