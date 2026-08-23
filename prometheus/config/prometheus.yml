@@ -47,14 +47,19 @@ scrape_configs:
       module: [http_2xx]
     static_configs:
       - targets:
-          - viaje.leyforge.com
-          - camperplan.leyforge.com
-          - memorias.leyforge.com
           - immich.leyforge.com
           - paperless.leyforge.com
           - music.leyforge.com
           - grafana.leyforge.com
           - chat.leyforge.com
+        labels:
+          tier: prod
+      - targets:
+          - viaje.leyforge.com
+          - camperplan.leyforge.com
+          - memorias.leyforge.com
+        labels:
+          tier: dev
     relabel_configs:
       - source_labels: [__address__]
         regex: 'viaje\.leyforge\.com'
