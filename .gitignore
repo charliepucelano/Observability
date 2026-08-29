@@ -1,6 +1,7 @@
 # Ignore data directories and large databases
 prometheus/data/
 loki/data/
+promtail/data/
 grafana/data/
 victoria/data/
 *.sqlite

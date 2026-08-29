@@ -3,17 +3,24 @@ server:
   grpc_listen_port: 0
 
 positions:
-  filename: /tmp/positions.yaml
+  filename: /promtail/positions.yaml
 
 clients:
   - url: http://loki:3100/loki/api/v1/push
+    batchwait: 3s
+    batchsize: 524288
+    backoff_config:
+      min_period: 500ms
+      max_period: 5m
+      max_retries: 10
+    timeout: 10s
 
 scrape_configs:
 
   - job_name: docker
     docker_sd_configs:
       - host: tcp://host.docker.internal:2375
-        refresh_interval: 5s
+        refresh_interval: 60s
     relabel_configs:
       - source_labels: [__meta_docker_container_name]
         regex: '/?(.*)'
@@ -24,6 +31,11 @@ scrape_configs:
         target_label: job
     pipeline_stages:
       - docker: {}
+      - match:
+          selector: '{container="loki"}'
+          stages:
+            - drop:
+                expression: ".*level=(info|debug).*"
       - match:
           selector: '{container="immich_server"}'
           stages:
@@ -68,7 +80,3 @@ scrape_configs:
           job: windows-processes
           host: geekom-a9
           __path__: /geekom/windows-logs/process-monitor.log
-
-  - job_name: cadvisor
-    static_configs:
-      - targets: ['cadvisor:8080']

@@ -1,6 +1,6 @@
 global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+  scrape_interval: 60s
+  evaluation_interval: 60s
 
 remote_write:
   - url: http://victoriametrics:8428/api/v1/write
@@ -104,7 +104,7 @@ scrape_configs:
 
   # Speedtest Exporter
   - job_name: "speedtest"
-    scrape_interval: 35m
-    scrape_timeout: 60s
+    scrape_interval: 3h
+    scrape_timeout: 90s
     static_configs:
       - targets: ["speedtest:9798"]

@@ -4,13 +4,20 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - D:/observability/prometheus/config:/etc/prometheus
       - D:/observability/prometheus/data:/prometheus
     command:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.path=/prometheus
-      - --storage.tsdb.retention.time=30d
+      - --storage.tsdb.retention.time=15d
       - --web.enable-lifecycle
       - --web.enable-admin-api
     ports:
@@ -22,6 +29,13 @@ services:
     image: grafana/loki:latest
     container_name: loki
     restart: unless-stopped
+    mem_limit: 350m
+    cpus: 0.75
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - D:/observability/loki/config:/etc/loki
       - D:/observability/loki/data:/loki
@@ -35,8 +49,16 @@ services:
     image: grafana/promtail:latest
     container_name: promtail
     restart: unless-stopped
+    mem_limit: 150m
+    cpus: 0.50
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - D:/observability/promtail/config:/etc/promtail
+      - D:/observability/promtail/data:/promtail
       - D:/backups/logs:/geekom/backup-logs:ro
       - D:/observability/logs:/geekom/windows-logs:ro
     command: -config.file=/etc/promtail/promtail-config.yml
@@ -49,6 +71,13 @@ services:
     image: prom/pushgateway:latest
     container_name: pushgateway
     restart: unless-stopped
+    mem_limit: 64m
+    cpus: 0.25
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - 9091:9091
     networks:
@@ -58,6 +87,13 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     restart: unless-stopped
+    mem_limit: 350m
+    cpus: 0.75
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     environment:
       - GF_SECURITY_ADMIN_USER=carlos
       - GF_SECURITY_ADMIN_PASSWORD=changeme123
@@ -80,11 +116,17 @@ services:
     container_name: cadvisor
     restart: unless-stopped
     command:
-      - --housekeeping_interval=30s
+      - --housekeeping_interval=60s
       - --docker_only=true
       - --disable_metrics=disk,tcp,udp,percpu,sched,process
       - --update_machine_info_interval=24h
     mem_limit: 300m
+    cpus: 0.50
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "8080:8080"
     volumes:
@@ -103,6 +145,13 @@ services:
     container_name: node-exporter
     restart: unless-stopped
     pid: host
+    mem_limit: 64m
+    cpus: 0.25
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -120,6 +169,13 @@ services:
     image: prom/blackbox-exporter:latest
     container_name: blackbox
     restart: unless-stopped
+    mem_limit: 64m
+    cpus: 0.25
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "9115:9115"
     volumes:
@@ -133,10 +189,23 @@ services:
     image: miguelndecarvalho/speedtest-exporter:latest
     container_name: speedtest
     restart: unless-stopped
+    mem_limit: 100m
+    cpus: 1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     ports:
       - "9798:9798"
     environment:
-      - SPEEDTEST_INTERVAL=1800  # 30 minutes
+      - SPEEDTEST_INTERVAL=10800  # 3 hours
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:9798/ || exit 1"]
+      interval: 1m
+      timeout: 10s
+      retries: 3
+      start_period: 30s
     networks:
       - observability
 
@@ -144,12 +213,19 @@ services:
     image: victoriametrics/victoria-metrics:latest
     container_name: victoriametrics
     restart: unless-stopped
+    mem_limit: 512m
+    cpus: 1.0
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
     volumes:
       - D:/observability/victoria/data:/victoria-metrics-data
     command:
       - -storageDataPath=/victoria-metrics-data
       - -retentionPeriod=12  # 12 months
-      - -dedup.minScrapeInterval=15s
+      - -dedup.minScrapeInterval=60s
     ports:
       - "8428:8428"
     networks:
