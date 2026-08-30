@@ -16,7 +16,7 @@ groups:
               to: 0
             datasourceUid: afoc3znhwo4cgf
             model:
-              expr: probe_success{job="uptime"}
+              expr: probe_success{job="uptime", tier="prod"}
               instant: true
               refId: A
           - refId: C
