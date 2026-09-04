@@ -12,6 +12,7 @@ fix_dash.py
 fix_panel5.py
 query_prom.py
 *.pyc
+__pycache__/
 
 # Ignore temp folders
 .temp/
