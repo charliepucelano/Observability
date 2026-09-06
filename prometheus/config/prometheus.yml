@@ -30,6 +30,7 @@ scrape_configs:
 
   # Docker container metrics (via cAdvisor)
   - job_name: "cadvisor"
+    honor_timestamps: false
     static_configs:
       - targets: ["cadvisor:8080"]
 
