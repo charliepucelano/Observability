@@ -387,7 +387,8 @@ class Tools:
     ) -> str:
         """
         List all running Docker containers with their uptime.
-        Uses Prometheus metrics scraped from cAdvisor — no direct cAdvisor connection needed.
+        Uses Prometheus metrics scraped from cAdvisor (measures Linux cgroup creation timestamp;
+        may show older dates than Docker daemon State.StartedAt if bounced without cgroup recreation).
         :return: Table of container names and uptimes.
         """
         if __event_emitter__:
@@ -416,7 +417,11 @@ class Tools:
                     f"| {name} | {_human_duration(uptime)} | {_ts_to_str(started)} |"
                 )
 
-            header = f"**Docker Containers** — {len(containers)} running:\n\n"
+            header = (
+                f"**Docker Containers (via cAdvisor cgroup timestamps)** — {len(containers)} running:\n"
+                f"*(Note: cAdvisor tracks cgroup creation; for recent container restarts without recreation, "
+                f"refer to Docker inspect State.StartedAt)*\n\n"
+            )
             return _truncate(header + "\n".join(lines))
 
         except Exception as e:
