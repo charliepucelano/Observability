@@ -2,6 +2,11 @@
 
 This is a running changelog of fixes and mitigations applied to the homelab. When analyzing logs and metrics, please assume these issues are already resolved and do not propose them as new solutions unless the metrics show the mitigation has explicitly failed.
 
+- **[2026-09-06] Perplexity Project URL Migration & Weekly Double-Trigger Permanent Fix**:
+  - **Perplexity Spaces-to-Projects Canonical Migration**: Updated `D:\openclaw\data\skills\devops_analyzer\scripts\analyze.sh` to use canonical project URL `https://www.perplexity.ai/projects/f1f94883-116c-40cb-ad55-791bddd3ad8d` instead of deprecated `/spaces/...`. Added tab URL inspection to avoid redundant SPA reloads, preventing the 20000ms `GatewayTransportError` CDP timeout that previously aborted `analyze.sh` before Step 2.
+  - **Search Mode vs Computer Mode Reactive Enforcement**: Enhanced `JS_SUBMIT` to detect if `Search` mode is unselected (`aria-pressed !== "true"`), clicking it and waiting for React state settlement before typing and submitting the diagnostic dump.
+  - **Sunday Weekly Analysis Double-Trigger Fix**: Enforced persistent lock file validation (`D:\scripts\.weekly-analysis-lastrun.txt`) directly inside `D:\scripts\weekly-analysis.ps1` at script entry. If triggered at 09:00:00 (via scheduler) and again at 09:04:59 (via GeekomBot's 5-minute polling loop), the second execution exits immediately as a duplicate. Added `-Force` flag to allow manual on-demand executions (`/analyze` and `/analyze_local`) and removed duplicate Telegram starting banners in `telegram-bot-listener.ps1`.
+
 - **[2026-08-30] Weekly DevOps Analysis & Perplexity Automation Overhaul**:
   - **OpenClaw Skill Restoration & Isolation**: Restored `devops_analyzer` and `campsite_crawler` in `D:\openclaw\data\skills\`. Refactored `D:\dev\RoadTripPlanner\sync_agent_skills.ps1` from a destructive root `/MIR` mirror to a targeted per-directory loop (`price_crawler`, `general_researcher`, `road20_firebase`), preventing accidental deletion of non-repo skills. Added auto-restore pre-flight check in `D:\scripts\weekly-analysis.ps1`.
   - **Perplexity UI Modal Dismissal & Search Mode Enforcement**: Updated `analyze.sh` to automatically dismiss credit upgrade modals ("Start using Computer by adding credits") and enforce `Search` mode over `Computer` mode.
