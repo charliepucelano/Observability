@@ -1,6 +1,12 @@
 # Recent Corrective Fixes (Do Not Re-diagnose)
 
 This is a running changelog of fixes and mitigations applied to the homelab. When analyzing logs and metrics, please assume these issues are already resolved and do not propose them as new solutions unless the metrics show the mitigation has explicitly failed.
+- **[2026-10-14] Road20 & Chrome CDP Monitoring Retirement**:
+  - **Trip Monitoring Retired**: Trip completed, so continuous monitoring of Road20 services was retired.
+  - **Bot Proactive Alert Disabled**: Removed the hourly Chrome (:9223) & CDP Proxy (:9222) down alert in `telegram-bot-listener.ps1` that was spamming `Chrome/CDP Proxy is down!`.
+  - **Uptime & Dev Server Cleaned**: Removed `viaje` (`:4173`) from `$apps` in `Get-UptimeStatus` and removed `r20dev` and `r20preview` from `Get-DevServersStatus` (`/dev`).
+  - **Container Watchdogs**: Added `r20dev`, `r20preview`, `road20`, and `viaje` to `$ignoredContainers` in `telegram-bot-listener.ps1` and `$exclude` in `container-watchdog.ps1`.
+  - **Post-Boot Health Cleaned**: Retired `Test-ChromeCdp` and `Test-R20Proxy` checks from `Test-PostUpdateHealth.ps1` so post-boot health checks won't report failures when Chrome/proxy are closed.
 
 - **[2026-10-04] Weekly Dump Accuracy Fixes & C: Drive Road20 Cleanup**:
   - **Dump generator (`D:\scripts\Generate-DevOpsDump.ps1`)**: The Oct 4 Perplexity analysis blamed OpenClaw for Windows low-memory warnings and flagged the weekly image refresh as a possible unplanned restart. Fixed the inputs: (1) Section 10 now lists the processes Windows itself names in Resource-Exhaustion-Detector events (actual culprits: `llama-server.exe` ~25 GB, `vmmemWSL` ~16 GB, `aida64.exe` ~8.5 GB growing) plus pagefile usage (8 GB fixed, peaked at 100%); (2) Section 4 marks containers recreated by `Geekom-DockerWeeklyUpdate` (Sun 10:30) as `(image update)`; (3) Section 14 was empty because it only took fixes from the last 7 days - now titles only, last 30 days, max 8 entries; (4) CPU temp summary drops implausible hourly samples outside 30-110C (AIDA64 sensor gaps produced the fake 20C minimum); (5) script made ASCII-only (PowerShell 5.1 read the BOM-less file as ANSI, producing mojibake) and ANSI colour codes stripped from Loki log patterns.
